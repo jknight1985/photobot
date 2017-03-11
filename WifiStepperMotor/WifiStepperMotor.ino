@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <Stepper.h>
+#include "HTMLFormat.h"
 
 WiFiServer server(80); //Initialize the server on Port 80
 unsigned char SENS_PIN = A0;
@@ -48,20 +49,12 @@ void loop() {
     }
 
   // Buttons document to html browser
-  String s = "HTTP/1.1 200 OK\r\n";
-  s +="Content-Type: text/html,\r\n\r\n";  
-  s += "<meta http-equiv=\"refresh\" content=\"1\">"; // Update every 5 seconds
-  s +="<body>Light: "; 
-  s +=String('bla');
-  s += "</body>"; 
-  s +="<br><input type=\"button\" name =\"b1\" value=\"Update\" onclick=\"location.href='/ON'\">";
-  s +="<!DOCTYPE html>\r\n<html>\r\n";
-  s +="<br><br><br>";
-  s +="</html>\n";
+  char htmlOut[1000];
+  sprintf(htmlOut, htmlFormat, "test");
 
   //Serve the HTML document to the browser.
   client.flush(); //clear previous info in the stream
-  client.print(s); // Send the response to the client
+  client.print(htmlOut); // Send the response to the client
   delay(1);
   Serial.println("Client disonnected"); //Looking under the hood  
 

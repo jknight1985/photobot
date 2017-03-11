@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>
+#include <Stepper.h>
 
 WiFiServer server(80); //Initialize the server on Port 80
 unsigned char SENS_PIN = A0;
@@ -37,9 +38,6 @@ void loop() {
   //Looking under the hood
     Serial.println("Somebody has connected :)"); 
   
-   // print out the value you read:
-  Serial.println(voltage);
-
   //Read what the browser has sent into a String class and print the request to the monitor
     String request = client.readStringUntil('\r'); 
   //Looking under the hood
@@ -54,7 +52,7 @@ void loop() {
   s +="Content-Type: text/html,\r\n\r\n";  
   s += "<meta http-equiv=\"refresh\" content=\"1\">"; // Update every 5 seconds
   s +="<body>Light: "; 
-  s +=String(voltage);
+  s +=String('bla');
   s += "</body>"; 
   s +="<br><input type=\"button\" name =\"b1\" value=\"Update\" onclick=\"location.href='/ON'\">";
   s +="<!DOCTYPE html>\r\n<html>\r\n";

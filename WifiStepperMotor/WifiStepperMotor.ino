@@ -3,18 +3,17 @@
 #include "HTMLFormat.h"
 
 WiFiServer server(80); //Initialize the server on Port 80
-unsigned char SENS_PIN = A0;
 
 // Stepper motor
-int SPMU = 32;  
-Stepper myStepper(SPMU, 2,3,4,5);  
-
+int SPMU = 2048;  // Steps per revolution
+int StartMotor = 0; 
+Stepper myStepper(SPMU,D3,D2,D1,D0);  
 
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
-    //Serial.begin(9600);
-  
+    Serial.begin(9600);
+
   // Start server
     WiFi.mode(WIFI_AP); //Our ESP8266-12E is an AccessPoint
     WiFi.softAP("Photobot", "12345678"); // Provide the (SSID, password);
@@ -22,16 +21,17 @@ void setup() {
 
   // Looking under the hood
     Serial.begin(115200); //Start communication between the ESP8266-12E and the monitor window
-    IPAddress HTTPS_ServerIP= WiFi.softAPIP(); // Obtain the IP of the Server
-    Serial.print("Server IP is: "); // Print the IP to the monitor window
-    Serial.println(HTTPS_ServerIP);
+    //IPAddress HTTPS_ServerIP= WiFi.softAPIP(); // Obtain the IP of the Server
+    //Serial.print("Server IP is: "); // Print the IP to the monitor window
+    //Serial.println(HTTPS_ServerIP);
 
   // Stepper motor setup
-  myStepper.setSpeed(800);
+  myStepper.setSpeed(5);
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
+
   WiFiClient client = server.available();
   if (!client) {
     return;
@@ -44,8 +44,11 @@ void loop() {
   //Looking under the hood
     Serial.println(request);  
   
-  if (request.indexOf("/") != -1){
-    //TODO
+    if (request.indexOf("/OFF") != -1){
+      StartMotor=0; 
+    }
+    else if (request.indexOf("/ON") != -1){
+      StartMotor=1;
     }
 
   // Buttons document to html browser
@@ -58,11 +61,13 @@ void loop() {
   delay(1);
   Serial.println("Client disonnected"); //Looking under the hood  
 
-  // Stepper motor test
-  myStepper.step(600);   // eine Umdrehung
-    delay(500);
-    myStepper.step(-600);  // wieder rückwarts
-    delay(500);
 
-  
+  // Stepper motor test
+ if(StartMotor)
+ {
+  myStepper.step(500);   // eine Umdrehung
+  delay(1000);
+  myStepper.step(-500);   // eine Umdrehung 
+  delay(1000); 
+ }
 }

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+	
+      <script type="text/javascript">
+      	var ws;
+      	var wsSocketIsOpen = false;
+      	var lastPt = null;
+      
+         function WebSocketTest()
+         {
+            if ("WebSocket" in window)
+            {
+               
+               
+               // Let us open a web socket
+               ws = new WebSocket("ws://192.168.178.20:9999/echo");
+				
+               ws.onopen = function()
+               {
+               		alert("Connected to server.");
+               		wsSocketIsOpen = true;
+                  // Web Socket is connected, send data using send()
+//                   ws.send("Message to send");
+//                   alert("Message is sent...");
+               };
+				
+               ws.onmessage = function (evt) 
+               { 
+//                Handle received data 
+
+//                   var received_msg = evt.data;
+//                   alert("Message is received: "+received_msg);
+               };
+				
+               ws.onclose = function()
+               { 
+                  // websocket is closed.
+                  wsSocketIsOpen = false;
+                  alert("Connection is closed..."); 
+               };
+            }
+            
+            else
+            {
+               // The browser doesn't support WebSocket
+               alert("WebSocket NOT supported by your Browser!");
+            }
+         }
+         
+         
+         function init() {
+        var touchzone = document.getElementById("mycanvas");
+        touchzone.addEventListener("touchmove", draw, false);
+        touchzone.addEventListener("touchend", end, false);
+        // ctx = touchzone.getContext("2d");
+      }
+ 
+      function draw(e) {
+        e.preventDefault();
+        if(lastPt!=null) {
+        
+        	console.log(e.touches[0].pageX +" " +e.touches[0].pageY);
+        	if(wsSocketIsOpen) {
+        	ws.send(e.touches[0].pageX +" " +e.touches[0].pageY);
+        	}
+//           ctx.beginPath();
+//           ctx.moveTo(lastPt.x, lastPt.y);
+//           ctx.lineTo(e.touches[0].pageX, e.touches[0].pageY);
+//           ctx.stroke();
+        }
+        lastPt = {x:e.touches[0].pageX, y:e.touches[0].pageY};
+      }
+ 
+      function end(e) {
+        e.preventDefault();
+        // Terminate touch path
+        lastPt=null;
+      }
+      
+      </script>
+		
+   </head>
+   <body onload="init()">
+   
+      <div id="sse">
+         <a href="javascript:WebSocketTest()">Run WebSocket</a>
+      </div>
+      
+      <canvas style="background-color:#ff0000" id="mycanvas" width="500" height="500">
+      Canvas element not supported.
+    </canvas>
+      
+   </body>
+</html>
